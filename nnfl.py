@@ -3,42 +3,64 @@ import numpy as np
 class Graph:
 # Computational graph class
     def __init__(self, values_dim, optim_config, loss_fn):
-        num = 0
+        self.num = 0
+        self.layers = list()
+        self.values_dim = values_dim
+        self.addgate("Linear",units=self.values_dim)        
+
 
     def addgate(self, activation, units=0):
-        self.layer[num].weights = np.random(units)
+
+        layer = Layer()
 
         if(activation == "ReLU"):
-            self.layer[num].activation = ReLU()
+            act_layer = ReLU(0,0)
         elif(activation == "Sigmoid"):
-            self.layer[num].activation = Sigmoid()
+            act_layer = Sigmoid(0,0)
         elif(activation == "Softmax"):
-            self.layer[num].activation = Softmax()
+            act_layer= Softmax(0,0)
         elif(activation == "Linear"):
-            self.layer[num].activation = Linear()
+            act_layer = Linear(0,0)
+        else:
+            return
+
+        if self.num == 0:
+            prev_units = 1
+        else:
+            prev_units = self.layers[self.num-1].weights.shape[1]
+
+        layer.weights = np.random.rand(prev_units,units)
+        layer.activation = act_layer
+
+        self.layers.append(layer)
+        self.num =  self.num  + 1
+
 
     def forward(self, values):
-         
+
         for i in range (self.num):
-            values = self.layer[i].weights * values
-            self.layer[i].predicted_values = self.layer[i].activation.forward(values)
-            values = predicted_values
+            values = np.dot(self.layers[i].weights,values)
+            self.layers[i].predicted_values = self.layers[i].activation.forward(values)
+            values = self.layers[i].predicted_values
             
-        return predicted_values
+        return self.layers[self.num-1].predicted_values
 
     def backward(self, expected, predicted):
         error = expected - predicted
         for i in range (self.num,0,-1):
-            for j in range(0, self.layer[i-1].units):
-                self.layer[i-1].delta[j] = error[j] * self.layer[i-1].activation.backward(self.layer[i-1].predicted_values[j])
-            error = np.sum(self.layer[i-1].delta * np.transpose(self.layer[i-1].weights))
+            for j in range(0, self.layers[i-1].units):
+                self.layers[i-1].delta[j] = error[j] * self.layers[i-1].activation.backward(self.layers[i-1].predicted_values[j])
+            error = np.sum(self.layers[i-1].delta * np.transpose(self.layers[i-1].weights))
 
 
     def update(self, loss):
         for i in range(self.num, 0, -1):
-            for j in range(0, self.layer[i-1].units):
-                self.layer[i-1].weights[j] = self.layer[i-1].weights[j] + lr*self.layer[i-1].delta*self.layer[i-2].predicted_values + mf*self.layer[i-1].del_w[j]
-                self.layer[i-1].del_w[j] = lr*self.layer[i-1].delta * self.layer[i-2].predicted_values
+            for j in range(0, self.layers[i-1].units):
+                self.layers[i-1].weights[j] = self.layers[i-1].weights[j] + lr*self.layers[i-1].delta*self.layers[i-2].predicted_values + mf*self.layers[i-1].del_w[j]
+                self.layers[i-1].del_w[j] = lr*self.layers[i-1].delta * self.layers[i-2].predicted_values
+
+class Layer(dict):
+    pass
 
 class ReLU:
 # ReLU
@@ -93,8 +115,7 @@ class DenseNet:
                
     def addlayer(self, activation, units):
         self.network.addgate(activation, units)
-        self.network.num =  network.num  + 1
-        
+
 
     def train(self, X, Y):
         predicted = self.network.forward(X)
@@ -103,5 +124,5 @@ class DenseNet:
         return loss_value
 
     def predict(self, X):
-        self.network.forward(X)
-        return predicted_values
+        predicted = self.network.forward(X)
+        return predicted
