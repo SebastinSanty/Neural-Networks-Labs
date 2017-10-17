@@ -32,13 +32,13 @@ class Graph:
             self.loss_val[i] = self.layer[i-1].activation.backward(self.loss_val[i-1])
 
     def update(self, loss):
-        for i in range(self.num, 0, -1)
-            layer[i-1].weights = layer[i-1].weights + 
+        for i in range(self.num, 0, -1):
+            layer[i-1].weights = layer[i-1].weights + 1
 
 class ReLU:
 # ReLU
     def __init__(self, d, m):
-    pass
+        pass
     def forward(self, values):
         if(values > 0):
             return values
@@ -56,8 +56,8 @@ class Sigmoid:
         gate_output = (1.0/(1+np.exp(-values)))
         return gate_output
     def backward(self, dz):
-        gradients_wrt_values = dz*(1-dz)
-        return gradients_wrt_values
+        gradients = dz*(1-dz)
+        return gradients
 
 class Softmax:
 # Softmax
@@ -68,8 +68,8 @@ class Softmax:
         gate_output = num/(np.sum(num))
         return gate_output
     def backward(self, dz):
-        gradients_wrt_valuess = dz*(1-dz)
-        return gradients_wrt_values
+        gradients = dz*(1-dz)
+        return gradients
 
 class Linear:
 # Linear
@@ -84,19 +84,19 @@ class Linear:
 
 class DenseNet:
     def __init__(self, values_dim, optim_config, loss_fn):
-        network = Graph(values_dim, optim_config, loss_fn)
+        self.network = Graph(values_dim, optim_config, loss_fn)
                
     def addlayer(self, activation, units):
-        network.addgate(activation, units)
-        network.num =  network.num  + 1
+        self.network.addgate(activation, units)
+        self.network.num =  network.num  + 1
         
 
     def train(self, X, Y):
-        predicted = network.forward(X)
-        loss = network.backward(Y,predicted)
-        network.update(loss)
+        predicted = self.network.forward(X)
+        loss = self.network.backward(Y,predicted)
+        self.network.update(loss)
         return loss_value
 
     def predict(self, X):
-        network.forward(X)
+        self.network.forward(X)
         return predicted_values
