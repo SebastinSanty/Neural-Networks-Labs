@@ -21,19 +21,24 @@ class Graph:
          
         for i in range (self.num):
             values = self.layer[i].weights * values
-            predicted_values = self.layer[i].activation.forward(values)
+            self.layer[i].predicted_values = self.layer[i].activation.forward(values)
             values = predicted_values
             
         return predicted_values
 
     def backward(self, expected, predicted):
-        self.loss_val[self.num-1] = expected
+        error = expected - predicted
         for i in range (self.num,0,-1):
-            self.loss_val[i] = self.layer[i-1].activation.backward(self.loss_val[i-1])
+            for j in range(0, self.layer[i-1].units):
+                self.layer[i-1].delta[j] = error[j] * self.layer[i-1].activation.backward(self.layer[i-1].predicted_values[j])
+            error = np.sum(self.layer[i-1].delta * np.transpose(self.layer[i-1].weights))
+
 
     def update(self, loss):
         for i in range(self.num, 0, -1):
-            layer[i-1].weights = layer[i-1].weights + 1
+            for j in range(0, self.layer[i-1].units):
+                self.layer[i-1].weights[j] = self.layer[i-1].weights[j] + lr*self.layer[i-1].delta*self.layer[i-2].predicted_values + mf*self.layer[i-1].del_w[j]
+                self.layer[i-1].del_w[j] = lr*self.layer[i-1].delta * self.layer[i-2].predicted_values
 
 class ReLU:
 # ReLU
