@@ -6,7 +6,7 @@ a.addlayer("Sigmoid",4)
 a.addlayer("Sigmoid",1)
 
 X = np.array([[0,0],[0,1],[1,0],[1,1]])
-y = np.array([[0],[1],[1],[1]])
+y = np.array([[0],[0],[0],[1]])
 
 
 print(a.predict(X))

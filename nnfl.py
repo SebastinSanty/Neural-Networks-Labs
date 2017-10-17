@@ -49,18 +49,19 @@ class Graph:
             
         return values
 
-    def backward(self, expected, predicted):
+    def backward(self, expected):
+        predicted = self.layers[self.num-1].predicted_values
         error = expected - predicted
-        for i in range (self.num,0,-1):
-            del_activation = self.layers[i-1].activation.backward(self.layers[i-1].predicted_values)
-            self.layers[i-1].delta = error*np.transpose(del_activation)
-            error = np.dot(self.layers[i-1].delta,np.transpose(self.layers[i-1].weights))
+        for i in range (self.num-1,-1,-1):
+            del_activation = self.layers[i].activation.backward(self.layers[i].predicted_values)
+            self.layers[i].delta = error*np.transpose(del_activation)
+            error = np.dot(self.layers[i].delta,np.transpose(self.layers[i].weights))
 
         return error
 
-    def update(self, loss):
-        for i in range(self.num, 0, -1):
-            self.layers[i-1].weights = self.layers[i-1].weights + self.lr*self.layers[i-1].delta*self.layers[i-1].input_values# + mf*self.layers[i-1].del_w[j]
+    def update(self):
+        for i in range(self.num-1, -1, -1):
+            self.layers[i].weights = self.layers[i].weights + self.lr*self.layers[i].delta*self.layers[i].input_values# + mf*self.layers[i-1].del_w[j]
             #self.layers[i-1].delta = self.lr*np.dot(self.layers[i-1].delta,self.layers[i-2].predicted_values)
 
 class Layer(dict):
@@ -70,10 +71,12 @@ class ReLU:
 # ReLU
     def __init__(self, d, m):
         pass
+
     def forward(self, values):
-        if(np.all(values > 0)):
-            return values
-        return 0
+        forward = np.zeros(values.shape)
+        forward[np.where(values>0)] = values[np.where(values>0)]
+        return forward
+
     def backward(self, dz):
         delta = np.zeros(dz.shape)
         delta[np.where(dz>0)] = 1
@@ -123,8 +126,8 @@ class DenseNet:
     def train(self, X, Y):
         for x,y in zip(X,Y):
             predicted = self.network.forward(x)
-            loss = self.network.backward(y,predicted)
-            self.network.update(loss)
+            loss = self.network.backward(y)
+            self.network.update()
         return loss
 
     def predict(self, X):
