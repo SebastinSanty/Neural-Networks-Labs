@@ -26,20 +26,23 @@ class Graph:
 
         if self.num == 0:
             prev_units = 1
+            layer.weights = np.ones((prev_units,units))
+
         else:
             prev_units = self.layers[self.num-1].weights.shape[1]
+            layer.weights = np.random.rand(prev_units,units)
 
-        layer.weights = np.random.rand(prev_units,units)
         layer.activation = act_layer
 
         self.layers.append(layer)
-        self.num =  self.num  + 1
+        self.num =  self.num + 1
 
 
     def forward(self, values):
 
         for i in range (self.num):
-            values = np.dot(self.layers[i].weights,values)
+            print(i)
+            values = np.transpose(self.layers[i].weights)*values
             self.layers[i].predicted_values = self.layers[i].activation.forward(values)
             values = self.layers[i].predicted_values
             
