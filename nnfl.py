@@ -6,7 +6,6 @@ class Graph:
         self.num = 0
         self.layers = list()
         self.values_dim = values_dim
-        self.addgate("Linear",units=self.values_dim)        
 
 
     def addgate(self, activation, units=0):
@@ -25,13 +24,12 @@ class Graph:
             return
 
         if self.num == 0:
-            prev_units = 1
-            layer.weights = np.ones((prev_units,units))
+            prev_units = self.values_dim
 
         else:
             prev_units = self.layers[self.num-1].weights.shape[1]
-            layer.weights = np.random.rand(prev_units,units)
-
+            
+        layer.weights = np.random.rand(prev_units,units)
         layer.activation = act_layer
 
         self.layers.append(layer)
@@ -39,14 +37,14 @@ class Graph:
 
 
     def forward(self, values):
+        values = values.reshape(self.values_dim,1)
 
         for i in range (self.num):
-            print(i)
-            values = np.transpose(self.layers[i].weights)*values
+            values = np.dot(np.transpose(self.layers[i].weights), values)
             self.layers[i].predicted_values = self.layers[i].activation.forward(values)
             values = self.layers[i].predicted_values
             
-        return self.layers[self.num-1].predicted_values
+        return values
 
     def backward(self, expected, predicted):
         error = expected - predicted
@@ -70,7 +68,7 @@ class ReLU:
     def __init__(self, d, m):
         pass
     def forward(self, values):
-        if(values > 0):
+        if(np.all(values > 0)):
             return values
         return 0
     def backward(self, dz):
@@ -119,7 +117,6 @@ class DenseNet:
     def addlayer(self, activation, units):
         self.network.addgate(activation, units)
 
-
     def train(self, X, Y):
         predicted = self.network.forward(X)
         loss = self.network.backward(Y,predicted)
@@ -127,5 +124,8 @@ class DenseNet:
         return loss_value
 
     def predict(self, X):
-        predicted = self.network.forward(X)
-        return predicted
+        output = list()
+        for x in X:
+            predicted = self.network.forward(x)
+            output.append(predicted)
+        return np.array(output)

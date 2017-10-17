@@ -1,7 +1,7 @@
 import numpy as np
 from nnfl import *
 
-a = DenseNet(4,5,"a")
-a.addlayer("ReLU",3)
+a = DenseNet(2,5,"a")
+a.addlayer("Sigmoid",1)
 
-print(a.predict([1,2,3,4]))
+print(a.predict(np.array([[1,2],[5,6]])))
