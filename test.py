@@ -13,7 +13,7 @@ y3 = np.array([[0,0,0],[0,0,1],[0,1,0],[0,1,1]])
 print(a.predict(X))
 
 print("Training..")
-for i in range(1):
+for i in range(1000):
 	a.train(X,y3)
 
 print("Testing..")

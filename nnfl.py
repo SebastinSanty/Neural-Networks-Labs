@@ -55,24 +55,13 @@ class Graph:
         error = expected - predicted
         for i in range (self.num-1,-1,-1):
             del_activation = self.layers[i].activation.backward(self.layers[i].predicted_values)
-            print(i)
-            print("Activation")
-            print(del_activation.shape)
-            print("Error")
-            print(error.shape)
             self.layers[i].delta = error*(del_activation)
-            print("delta")
-            print(self.layers[i].delta.shape)
-            print("weights")
-            print(self.layers[i].weights.shape)
             error = np.dot(self.layers[i].weights,self.layers[i].delta)
 
         return error
 
     def update(self):
-        print("Update")
         for i in range(self.num-1, -1, -1):
-            print(i)
             self.layers[i].weights = self.layers[i].weights + self.lr*np.transpose(self.layers[i].delta)*self.layers[i].input_values# + mf*self.layers[i-1].del_w[j]
             #self.layers[i-1].delta = self.lr*np.dot(self.layers[i-1].delta,self.layers[i-2].predicted_values)
 
