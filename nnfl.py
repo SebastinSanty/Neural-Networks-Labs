@@ -72,6 +72,12 @@ class Graph:
             loss = - (expected*np.log(predicted) + (1-expected)*np.log(1-predicted))
             error = expected/predicted - (1-expected)/(1-predicted)
 
+        if self.loss_fn == "svm_loss":
+            loss = np.max(0, predicted - expected +1)
+            error = np.zeros(loss.shape[0])
+            error[np.where(loss[0]>0)] = 1
+
+
         for i in range (self.num-1,-1,-1):
             del_activation = self.layers[i].activation.backward(self.layers[i].predicted_values)
             self.layers[i].delta = error*(del_activation)
