@@ -73,11 +73,11 @@ class Graph:
             error = expected/predicted - (1-expected)/(1-predicted)
 
         if self.loss_fn == "svm_loss":
-            margin = predicted - expected +1
+            margin = expected - predicted +1
             loss = np.zeros(margin.shape[0])
             loss[np.where(margin[0]>0)] = margin[0]
             error = np.zeros(margin.shape[0])
-            error[np.where(loss[0]>0)] = 1
+            error[np.where(margin[0]>0)] = 1
 
 
         for i in range (self.num-1,-1,-1):
