@@ -7,6 +7,8 @@ class Graph:
         self.layers = list()
         self.values_dim = values_dim
         self.lr = 0.9
+        self.momentum = True
+        self.mf = 0.1
 
 
     def addgate(self, activation, units=0):
@@ -33,6 +35,7 @@ class Graph:
         layer.weights = np.random.rand(prev_units,units)
         layer.biases = np.random.rand(units,1)
         layer.activation = act_layer
+        layer.delta_w = 0
         layer.units = units
 
         self.layers.append(layer)
@@ -63,9 +66,10 @@ class Graph:
 
     def update(self):
         for i in range(self.num-1, -1, -1):
-            self.layers[i].weights = self.layers[i].weights + self.lr*np.transpose(self.layers[i].delta)*self.layers[i].input_values# + mf*self.layers[i-1].del_w[j]
-
-            #self.layers[i-1].delta = self.lr*np.dot(self.layers[i-1].delta,self.layers[i-2].predicted_values)
+            self.layers[i].weights = self.layers[i].weights + self.lr*np.transpose(self.layers[i].delta)*self.layers[i].input_values
+            if self.momentum:
+                self.layers[i].weights = self.layers[i].weights + self.mf*self.layers[i].delta_w
+                self.layers[i].delta_w = self.lr*np.transpose(self.layers[i].delta)*self.layers[i].input_values
             self.layers[i].biases = self.layers[i].biases + self.layers[i].delta
 
 class Layer(dict):
