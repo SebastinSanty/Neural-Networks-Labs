@@ -1,7 +1,7 @@
 import numpy as np
 from nnfl import *
 
-a = DenseNet(3,"momentum","l1_loss")
+a = DenseNet(3,"momentum","svm_loss")
 a.addlayer("ReLU",4)
 a.addlayer("Sigmoid",1)
 
