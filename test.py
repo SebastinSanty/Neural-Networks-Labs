@@ -1,7 +1,7 @@
 import numpy as np
 from nnfl import *
 
-a = DenseNet(3,5,"a")
+a = DenseNet(3,"momentum","l1_loss")
 a.addlayer("ReLU",4)
 a.addlayer("Sigmoid",1)
 
@@ -14,7 +14,8 @@ print(a.predict(X))
 
 print("Training..")
 for i in range(100):
-	a.train(X,y1)
+	error = a.train(X,y1)
+	print("Epoch %d, Training Error %lf"%(i,error))
 
 print("Testing..")
 
