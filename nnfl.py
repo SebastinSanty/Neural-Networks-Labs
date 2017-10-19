@@ -31,6 +31,7 @@ class Graph:
             prev_units = self.layers[self.num-1].weights.shape[1]
             
         layer.weights = np.random.rand(prev_units,units)
+        layer.biases = np.random.rand(units,1)
         layer.activation = act_layer
         layer.units = units
 
@@ -41,9 +42,9 @@ class Graph:
     def forward(self, values):
         values = values.reshape(self.values_dim,1)
 
-        for i in range (self.num):
+        for i in range(self.num):
             self.layers[i].input_values = values
-            values = np.dot(np.transpose(self.layers[i].weights), values)
+            values = np.dot(np.transpose(self.layers[i].weights), values) + self.layers[i].biases
             self.layers[i].predicted_values = self.layers[i].activation.forward(values)
             values = self.layers[i].predicted_values
             
@@ -63,7 +64,9 @@ class Graph:
     def update(self):
         for i in range(self.num-1, -1, -1):
             self.layers[i].weights = self.layers[i].weights + self.lr*np.transpose(self.layers[i].delta)*self.layers[i].input_values# + mf*self.layers[i-1].del_w[j]
+
             #self.layers[i-1].delta = self.lr*np.dot(self.layers[i-1].delta,self.layers[i-2].predicted_values)
+            self.layers[i].biases = self.layers[i].biases + self.layers[i].delta
 
 class Layer(dict):
     pass
